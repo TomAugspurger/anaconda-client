@@ -15,7 +15,7 @@ try:
 except ImportError:
     from urllib.parse import quote_plus
 
-from binstar_client.utils.conda import CONDA_PREFIX, CONDA_ROOT
+from binstar_client.utils.conda import CONDA_PREFIX, get_conda_root, get_anaconda_client_config
 from binstar_client.utils.appdirs import AppDirs, EnvAppDirs
 from binstar_client.errors import BinstarError
 
@@ -26,7 +26,7 @@ logger = logging.getLogger('binstar')
 
 
 def expandvars(path):
-    environ = dict(CONDA_ROOT=CONDA_ROOT, CONDA_PREFIX=CONDA_PREFIX)
+    environ = dict(CONDA_ROOT=get_conda_root(), CONDA_PREFIX=CONDA_PREFIX)
     environ.update(os.environ)
     return Template(path).safe_substitute(**environ)
 
@@ -235,12 +235,21 @@ def load_file_configs(search_path):
     return raw_data
 
 
-def get_config(site=None):
+def get_config(site=None, conda_config=False):
     config = DEFAULT_CONFIG.copy()
 
-    file_configs = load_file_configs(SEARCH_PATH)
-    for fn in file_configs:
-        recursive_update(config, file_configs[fn])
+    conda_anaconda_client_config = None
+    if conda_config:
+        logger.debug('Getting configuration from conda backend')
+        conda_anaconda_client_config = get_anaconda_client_config()
+        recursive_update(config, conda_anaconda_client_config)
+
+    # If the conda config is not used or if it fails, we revert fo files.
+    if conda_anaconda_client_config is None:
+        logger.debug('Getting configuration from files')
+        file_configs = load_file_configs(SEARCH_PATH)
+        for fn in file_configs:
+            recursive_update(config, file_configs[fn])
 
     site = site or config.get('default_site')
     sites = config.get('sites', {})

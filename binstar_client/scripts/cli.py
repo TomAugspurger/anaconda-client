@@ -82,7 +82,8 @@ def _setup_logging(logger, log_level=logging.INFO, show_traceback=False, disable
     console_handler.setLevel(log_level)
 
     console_handler.setFormatter(ConsoleFormatter())
-    file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)-8s %(name)-15s %(message)s'))
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)-8s %(name)-15s %(message)s'))
 
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
@@ -112,17 +113,21 @@ def add_default_arguments(parser, version=None):
                             version="%%(prog)s Command line client (version %s)" % (version,))
 
 
-def binstar_main(sub_command_module, args=None, exit=True, description=None, version=None, epilog=None):
+def binstar_main(sub_command_module, args=None, exit=True, description=None, version=None,
+                 epilog=None):
     parser = ArgumentParser(description=description, epilog=epilog,
                             formatter_class=RawDescriptionHelpFormatter)
 
     add_default_arguments(parser, version)
-    bgroup = parser.add_argument_group('anaconda-client options')
-    bgroup.add_argument('-t', '--token', type=file_or_token,
-                        help="Authentication token to use. "
-                             "May be a token or a path to a file containing a token")
-    bgroup.add_argument('-s', '--site',
-                        help='select the anaconda-client site to use', default=None)
+
+    agrument_group = parser.add_argument_group('anaconda-client options')
+    agrument_group.add_argument('--conda-config', action='store_true',
+                                help="Use conda configuration backend.")
+    agrument_group.add_argument('-t', '--token', type=file_or_token,
+                                help="Authentication token to use. It may be a token or a path "
+                                     "to a file containing a token")
+    agrument_group.add_argument('-s', '--site',
+                                help='Select the anaconda-client site to use', default=None)
 
     add_subparser_modules(parser, sub_command_module, 'conda_server.subcommand')
 

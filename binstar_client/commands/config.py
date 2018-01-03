@@ -106,7 +106,7 @@ def recursive_remove(config_data, key):
 
 
 def main(args):
-    config = get_config()
+    config = get_config(conda_config=args.conda_config)
 
     if args.show:
         logger.info(yaml_dump(config))
