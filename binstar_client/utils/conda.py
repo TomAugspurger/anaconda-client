@@ -132,7 +132,7 @@ def get_anaconda_client_config():
 
     try:
         anaconda_client_config = _import_anaconda_config_conda_context()
-    except ImportError:
+    except (ImportError, AttributeError):
         logger.debug("Exception importing conda.base.context", exc_info=True)
 
         anaconda_client_config = _anaconda_client_config_from_conda_config()
