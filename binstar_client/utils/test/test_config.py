@@ -1,11 +1,9 @@
-<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 """Test anaconda-client configuration set/get."""
 
 # Standard library imports
 from os.path import join
-=======
->>>>>>> Fix tests
+
 import os
 import shutil
 import tempfile
