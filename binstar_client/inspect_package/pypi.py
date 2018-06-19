@@ -215,6 +215,7 @@ def inspect_pypi_package_whl(filename, fileobj):
     if platform == 'any': platform = None
     if abi == 'none': abi = None
 
+    file_data['basename'] = filename
     file_data.setdefault('attrs', {})
 
     file_data['attrs'] = dict(build_no=build_no, python_version=python_version, abi=abi,
